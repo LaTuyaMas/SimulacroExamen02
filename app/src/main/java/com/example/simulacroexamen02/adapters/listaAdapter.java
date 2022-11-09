@@ -16,8 +16,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.simulacroexamen02.R;
 import com.example.simulacroexamen02.modelos.Producto;
 
-import org.w3c.dom.Text;
-
 import java.util.ArrayList;
 
 public class listaAdapter extends RecyclerView.Adapter<listaAdapter.ListaVH>{
