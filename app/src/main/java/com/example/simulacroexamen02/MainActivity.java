@@ -7,7 +7,6 @@ import android.os.Bundle;
 import com.example.simulacroexamen02.adapters.listaAdapter;
 import com.example.simulacroexamen02.constantes.Constantes;
 import com.example.simulacroexamen02.modelos.Producto;
-import com.google.android.material.snackbar.Snackbar;
 
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
@@ -18,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -46,7 +46,8 @@ public class MainActivity extends AppCompatActivity {
         int columnas;
         columnas = getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT ? 1 : 2;
 
-        adapter = new listaAdapter(MainActivity.this, listaCompra, R.layout.lista_model_view);
+        adapter = new listaAdapter(MainActivity.this, listaCompra, R.layout.lista_model_view,
+                binding.contentMain.txtCantidadMain, binding.contentMain.txtPrecioMain);
         layoutManager = new GridLayoutManager(MainActivity.this, columnas);
         binding.contentMain.contenedor.setAdapter(adapter);
         binding.contentMain.contenedor.setLayoutManager(layoutManager);
@@ -65,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
                                         adapter.notifyItemInserted(0);
                                     }
                                     else {
-                                        Toast.makeText(MainActivity.this, "El bundle no lleva el tag INMUEBLE", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(MainActivity.this, "El bundle no lleva el tag "+Constantes.PRODUCTO, Toast.LENGTH_SHORT).show();
                                     }
                                 }
                                 else {
@@ -83,6 +84,8 @@ public class MainActivity extends AppCompatActivity {
                 }
         );
 
+        actualizarContadores();
+
         // YA NO SE INICIAN MÁS ELEMENTOS
         binding.fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -90,6 +93,24 @@ public class MainActivity extends AppCompatActivity {
                 launcherCreateProducto.launch(new Intent(MainActivity.this, CreateActivity.class));
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        actualizarContadores();
+    }
+
+    private void actualizarContadores(){
+        binding.contentMain.txtCantidadMain.setText(String.valueOf(listaCompra.size()));
+
+        float precioTotal = 0;
+
+        for (Producto p : listaCompra){
+            precioTotal += p.getPrecio();
+        }
+
+        binding.contentMain.txtPrecioMain.setText(String.valueOf(precioTotal));
     }
 
     @Override
