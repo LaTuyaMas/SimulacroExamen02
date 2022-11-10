@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -16,53 +17,57 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.simulacroexamen02.R;
 import com.example.simulacroexamen02.modelos.Producto;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
 
 public class listaAdapter extends RecyclerView.Adapter<listaAdapter.ListaVH>{
 
     private Context context;
     private ArrayList<Producto> objects;
-    private int cardLayout;
+    private int resources;
     private TextView txtCantidadTotal;
     private TextView txtPrecioTotal;
+
+    private NumberFormat numberFormat;
 
     public listaAdapter(Context context, ArrayList<Producto> objects, int cardLayout, TextView txtCantidadTotal, TextView txtPrecioTotal){
         this.context = context;
         this.objects = objects;
-        this.cardLayout = cardLayout;
+        this.resources = cardLayout;
         this.txtCantidadTotal = txtCantidadTotal;
         this.txtPrecioTotal = txtPrecioTotal;
+        numberFormat = NumberFormat.getCurrencyInstance();
     }
 
     @NonNull
     @Override
     public ListaVH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View todoView = LayoutInflater.from(context).inflate(cardLayout, null);
+        View ProductoView = LayoutInflater.from(context).inflate(resources, null);
         RecyclerView.LayoutParams layoutParams = new RecyclerView.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
         );
-        todoView.setLayoutParams(layoutParams);
-        return new ListaVH(todoView);
+        ProductoView.setLayoutParams(layoutParams);
+        return new ListaVH(ProductoView);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ListaVH holder, int position) {
-        Producto producto = objects.get(position);
-        holder.lblNombre.setText(producto.getNombre());
-        holder.lblCantidad.setText(String.valueOf(producto.getCantidad()));
-        holder.lblPrecio.setText(String.valueOf(producto.getPrecio()));
+        Producto p = objects.get(position);
+        holder.lblNombre.setText(p.getNombre());
+        holder.lblCantidad.setText(String.valueOf(p.getCantidad()));
+        holder.lblPrecio.setText(numberFormat.format(p.getPrecio()));
 
         holder.btnEliminar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                eliminarProducto(producto, holder.getAdapterPosition()).show();
+                eliminarProducto(p, holder.getAdapterPosition()).show();
             }
         });
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                editToDo(producto, holder.getAdapterPosition()).show();
+                editToDo(p, holder.getAdapterPosition()).show();
             }
         });
     }
@@ -74,21 +79,26 @@ public class listaAdapter extends RecyclerView.Adapter<listaAdapter.ListaVH>{
 
     private androidx.appcompat.app.AlertDialog editToDo(Producto producto, int position) {
         androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(context);
-        builder.setTitle("Editar Producto");
+        builder.setTitle(R.string.editarProducto);
         builder.setCancelable(false);
 
-        View alertView = LayoutInflater.from(context). inflate(R.layout.lista_model_alert, null);
-        TextView txtNombre = alertView.findViewById(R.id.txtNombreAlert);
-        TextView txtCantidad = alertView.findViewById(R.id.txtCantidadAlert);
-        TextView txtPrecio = alertView.findViewById(R.id.txtPrecioAlert);
+        View alertView = LayoutInflater.from(context). inflate(R.layout.activity_create, null);
+        TextView txtNombre = alertView.findViewById(R.id.txtNombreCreate);
+        TextView txtCantidad = alertView.findViewById(R.id.txtCantidadCreate);
+        TextView txtPrecio = alertView.findViewById(R.id.txtPrecioCreate);
+        Button btnCrear = alertView.findViewById(R.id.btnAnyadirCreate);
+
+        txtNombre.setEnabled(false);
+        btnCrear.setVisibility(View.GONE);
+
         builder.setView(alertView);
 
         txtNombre.setText(producto.getNombre());
         txtCantidad.setText(String.valueOf(producto.getCantidad()));
         txtPrecio.setText(String.valueOf(producto.getPrecio()));
 
-        builder.setNegativeButton("CANCELAR", null);
-        builder.setPositiveButton("EDITAR", new DialogInterface.OnClickListener() {
+        builder.setNegativeButton(R.string.cancelar, null);
+        builder.setPositiveButton(R.string.editar, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 if (!txtNombre.getText().toString().isEmpty() && !txtCantidad.getText().toString().isEmpty() && !txtPrecio.getText().toString().isEmpty()){
@@ -99,7 +109,7 @@ public class listaAdapter extends RecyclerView.Adapter<listaAdapter.ListaVH>{
                     actualizarContadores();
                 }
                 else {
-                    Toast.makeText(context, "FALTAN DATOS", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, R.string.faltanDatos, Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -111,14 +121,14 @@ public class listaAdapter extends RecyclerView.Adapter<listaAdapter.ListaVH>{
 
         builder.setCancelable(false);
         TextView mensaje = new TextView(context);
-        mensaje.setText("¿ESTÁS SEGURO QUE QUIERES ELIMINARLO?");
+        mensaje.setText(R.string.mensajeEliminar);
         mensaje.setTextSize(20);
         mensaje.setTextColor(Color.RED);
         mensaje.setPadding(50,100,50,100);
         builder.setView(mensaje);
 
         builder.setNegativeButton("NO", null);
-        builder.setPositiveButton("SI", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(R.string.si, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 objects.remove(producto);
@@ -138,7 +148,7 @@ public class listaAdapter extends RecyclerView.Adapter<listaAdapter.ListaVH>{
             precioTotal += p.getPrecio();
         }
 
-        txtPrecioTotal.setText(String.valueOf(precioTotal));
+        txtPrecioTotal.setText(numberFormat.format(precioTotal));
     }
 
     public class ListaVH extends RecyclerView.ViewHolder{

@@ -22,9 +22,12 @@ import android.widget.Toast;
 
 import com.example.simulacroexamen02.databinding.ActivityMainBinding;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
+
+    private NumberFormat numberFormat;
 
     private ActivityMainBinding binding;
     private ArrayList<Producto> listaCompra;
@@ -42,6 +45,8 @@ public class MainActivity extends AppCompatActivity {
 
         // INICIALIZANDO ELEMENTOS
         listaCompra = new ArrayList<>();
+        numberFormat = NumberFormat.getCurrencyInstance();
+
         int columnas;
         columnas = getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT ? 1 : 2;
 
@@ -51,6 +56,20 @@ public class MainActivity extends AppCompatActivity {
         binding.contentMain.contenedor.setAdapter(adapter);
         binding.contentMain.contenedor.setLayoutManager(layoutManager);
 
+        inicializarLaunchers();
+
+        actualizarContadores();
+
+        // YA NO SE INICIAN MÁS ELEMENTOS
+        binding.fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                launcherCreateProducto.launch(new Intent(MainActivity.this, CreateActivity.class));
+            }
+        });
+    }
+
+    private void inicializarLaunchers(){
         launcherCreateProducto = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 new ActivityResultCallback<ActivityResult>() {
@@ -82,16 +101,6 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
         );
-
-        actualizarContadores();
-
-        // YA NO SE INICIAN MÁS ELEMENTOS
-        binding.fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                launcherCreateProducto.launch(new Intent(MainActivity.this, CreateActivity.class));
-            }
-        });
     }
 
     @Override
@@ -109,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
             precioTotal += p.getPrecio();
         }
 
-        binding.contentMain.txtPrecioMain.setText(String.valueOf(precioTotal));
+        binding.contentMain.txtPrecioMain.setText(numberFormat.format(precioTotal));
     }
 
     @Override
@@ -118,7 +127,6 @@ public class MainActivity extends AppCompatActivity {
         outState.putSerializable(Constantes.PRODUCTO, listaCompra);
     }
 
-    //Restablece la lista
     @Override
     protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);

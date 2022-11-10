@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">SimulacroExamen02</string>
+    <string name="mensajeEliminar">ARE YOU SURE YOU WANT TO DELETE?</string>
+    <string name="cancelar">CANCEL</string>
+    <string name="editar">EDIT</string>
+    <string name="si">YES</string>
+    <string name="editarProducto">Edit Product</string>
+    <string name="faltanDatos">DATA IS MISSING</string>
+</resources>
