@@ -14,6 +14,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.simulacroexamen02.MainActivity;
 import com.example.simulacroexamen02.R;
 import com.example.simulacroexamen02.modelos.Producto;
 
@@ -25,17 +26,15 @@ public class listaAdapter extends RecyclerView.Adapter<listaAdapter.ListaVH>{
     private Context context;
     private ArrayList<Producto> objects;
     private int resources;
-    private TextView txtCantidadTotal;
-    private TextView txtPrecioTotal;
+    private MainActivity main;
 
     private NumberFormat numberFormat;
 
-    public listaAdapter(Context context, ArrayList<Producto> objects, int cardLayout, TextView txtCantidadTotal, TextView txtPrecioTotal){
+    public listaAdapter(Context context, ArrayList<Producto> objects, int cardLayout){
         this.context = context;
+        this.main = (MainActivity) context;
         this.objects = objects;
         this.resources = cardLayout;
-        this.txtCantidadTotal = txtCantidadTotal;
-        this.txtPrecioTotal = txtPrecioTotal;
         numberFormat = NumberFormat.getCurrencyInstance();
     }
 
@@ -106,7 +105,7 @@ public class listaAdapter extends RecyclerView.Adapter<listaAdapter.ListaVH>{
                     producto.setCantidad(Integer.parseInt(txtCantidad.getText().toString()));
                     producto.setPrecio(Float.parseFloat(txtPrecio.getText().toString()));
                     notifyItemChanged(position);
-                    actualizarContadores();
+                    main.actualizarContadores();
                 }
                 else {
                     Toast.makeText(context, R.string.faltanDatos, Toast.LENGTH_SHORT).show();
@@ -133,22 +132,10 @@ public class listaAdapter extends RecyclerView.Adapter<listaAdapter.ListaVH>{
             public void onClick(DialogInterface dialogInterface, int i) {
                 objects.remove(producto);
                 notifyItemRemoved(position);
-                actualizarContadores();
+                main.actualizarContadores();
             }
         });
         return builder.create();
-    }
-
-    private void actualizarContadores(){
-        txtCantidadTotal.setText(String.valueOf(objects.size()));
-
-        float precioTotal = 0;
-
-        for (Producto p : objects){
-            precioTotal += p.getPrecio();
-        }
-
-        txtPrecioTotal.setText(numberFormat.format(precioTotal));
     }
 
     public class ListaVH extends RecyclerView.ViewHolder{

@@ -50,8 +50,7 @@ public class MainActivity extends AppCompatActivity {
         int columnas;
         columnas = getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT ? 1 : 2;
 
-        adapter = new listaAdapter(MainActivity.this, listaCompra, R.layout.lista_model_view,
-                binding.contentMain.txtCantidadMain, binding.contentMain.txtPrecioMain);
+        adapter = new listaAdapter(MainActivity.this, listaCompra, R.layout.lista_model_view);
         layoutManager = new GridLayoutManager(MainActivity.this, columnas);
         binding.contentMain.contenedor.setAdapter(adapter);
         binding.contentMain.contenedor.setLayoutManager(layoutManager);
@@ -82,6 +81,7 @@ public class MainActivity extends AppCompatActivity {
                                         Producto producto = (Producto) result.getData().getExtras().getSerializable(Constantes.PRODUCTO);
                                         listaCompra.add(0, producto);
                                         adapter.notifyItemInserted(0);
+                                        actualizarContadores();
                                     }
                                     else {
                                         Toast.makeText(MainActivity.this, "El bundle no lleva el tag "+Constantes.PRODUCTO, Toast.LENGTH_SHORT).show();
@@ -103,13 +103,7 @@ public class MainActivity extends AppCompatActivity {
         );
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        actualizarContadores();
-    }
-
-    private void actualizarContadores(){
+    public void actualizarContadores(){
         binding.contentMain.txtCantidadMain.setText(String.valueOf(listaCompra.size()));
 
         float precioTotal = 0;
